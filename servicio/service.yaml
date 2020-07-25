@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kubernetes.io/change-cause: "Primer deploy"
+  name: service-deployment
+  labels:
+    app: front
+spec: 
+  #revisionHistoryLimit: 1
+  replicas: 3
+  selector:
+    matchLabels:
+      app: front
+  template:
+    metadata:
+      labels:
+        app: front
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+  labels:
+    app: front 
+spec:
+  type: ClusterIP
+  selector:
+    app: front
+  ports:
+    - protocol: TCP
+      port: 8080 #Unicamente remapea el puerto si por ejemplo se quiere abrir el 8080 en vez del 80 en todos los pods A NIVEL DE SERVICIO (no a nivel de nodo)
+      targetPort: 80

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+      kubernetes.io/change-cause: "Primer despliegue de front"
+  name: frontend-deploy
+#Replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+#Pods
+  template:
+    metadata:
+      labels: #El label que se le van a asignar a los pods
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: first-front:v2
+        imagePullPolicy: IfNotPresent
+
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  frontend-service
+spec:
+  selector:
+    app: frontend
+  type:  NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1 id="container">Container nginx</h1>
+<div id="id01"></div>
+
+<script>
+var xmlhttp = new XMLHttpRequest();
+var url = "http://backend-service:9090";
+
+xmlhttp.onreadystatechange = function() {
+  if (this.readyState == 4 && this.status == 200) {
+    var resp = JSON.parse(this.responseText);
+    document.getElementById("id01").innerHTML = "<h2>La hora es: "+ resp.time +" <h2>";
+    document.getElementById("container").innerHTML = "<h1>Container: "+ resp.hostname +" <h1>";
+
+  }
+};
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Namespace
+metadata: 
+  name: ci
+  labels:
+    name: ci
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+      kubernetes.io/change-cause: "Cambio nombre de imagen"
+  name: backend-deploy
+  namespace: ci
+  labels:
+    app: backend
+#Replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+#Pods
+  template:
+    metadata:
+      labels: #El label que se le van a asignar a los pods
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: first-backend-node:v1
+        imagePullPolicy: IfNotPresent
+
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: backend-service
+  namespace: ci
+spec:
+  selector:
+    app:  backend
+  type:  ClusterIP
+  ports:
+  - protocol: TCP 
+    port:  8080
