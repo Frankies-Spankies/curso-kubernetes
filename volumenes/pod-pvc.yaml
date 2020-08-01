@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pod-pv
+  labels:
+    mysql: ready
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  #Solo puede ser coupado por un NODO a la vez
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mysql"
+---
+#Una vez ligado a un pv, ya no se puede desligar mas que eliminandolo
+#No se puede eliminar un pvc si esta asociado a un recurso, deploy, pod, etc.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pod-pvc
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  #Si no se encuentran los selectors, tomara el pv que cumpla el storage y el storageClassName
+  selector:
+    matchLabels:
+      mysql: ready
+---      
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pvc-deploy
+  labels:
+    app: mysql
+#Replica-set
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  #Pods
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      #Volumenes    
+      volumes:
+        - name: pod-vol
+          persistentVolumeClaim:
+            claimName: pod-pvc
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: "1234"
+        volumeMounts:
+          - mountPath: "/var/lib/mysql"
+            name: pod-vol

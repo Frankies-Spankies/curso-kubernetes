@@ -1,0 +1,14 @@
+#Storage class define el provosionador y los parametros que se tienen que pasar cuando se hace un provisionamiento dinamico
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pod-pvc
+spec:
+#Si no se especifica el storageClassName o se asigna el storageClassName del provisionador 
+#la asignacion del pv sera dinamica por que se ocupa el storage class por default y este 
+#aprovisiona pv dinamicamente en el hostpath
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
